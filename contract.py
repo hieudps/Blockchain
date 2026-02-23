@@ -7,14 +7,13 @@ class TokenContract:
         self.balances = {}
 
     def deploy(self, owner):
-        # Khi deploy, toàn bộ supply thuộc về owner
         self.balances[owner] = self.total_supply
 
     def balance_of(self, address):
         return self.balances.get(address, 0)
 
     def transfer(self, sender, receiver, amount):
-        # Kiểm tra đủ số dư trước khi thực hiện state transition
+
         if self.balance_of(sender) < amount:
             return False
 

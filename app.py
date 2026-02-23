@@ -13,7 +13,6 @@ def home():
 @app.route('/balance/<address>')
 def balance(address):
     return jsonify({
-        "address": address,
         "balance": blockchain.contract.balance_of(address)
     })
 
@@ -22,13 +21,16 @@ def balance(address):
 def transfer():
     data = request.get_json()
 
-    blockchain.add_transaction(
+    success = blockchain.add_transaction(
         data['sender'],
         data['receiver'],
         data['amount']
     )
 
-    return jsonify({"message": "Transaction added to pending pool"})
+    if not success:
+        return jsonify({"message": "Insufficient balance"}), 400
+
+    return jsonify({"message": "Transaction added"})
 
 
 @app.route('/mine')
@@ -36,11 +38,11 @@ def mine():
     block = blockchain.mine()
 
     if not block:
-        return jsonify({"message": "No transactions to mine"}), 400
+        return jsonify({"message": "Nothing to mine"}), 400
 
     return jsonify({
-        "block_index": block.index,
-        "hash": block.hash
+        "hash": block.hash,
+        "index": block.index
     })
 
 
@@ -48,6 +50,33 @@ def mine():
 def chain():
     return jsonify([block.__dict__ for block in blockchain.chain])
 
+
+@app.route('/block/<int:index>')
+def block_detail(index):
+    if index < len(blockchain.chain):
+        return render_template("block.html", block=blockchain.chain[index])
+    return "Block not found"
+
+@app.route('/address/<address>')
+def search_address(address):
+
+    transactions = []
+
+    for block in blockchain.chain:
+        for tx in block.transactions:
+            if tx["sender"] == address or tx["receiver"] == address:
+                transactions.append({
+                    "block": block.index,
+                    "sender": tx["sender"],
+                    "receiver": tx["receiver"],
+                    "amount": tx["amount"]
+                })
+
+    return jsonify({
+        "address": address,
+        "balance": blockchain.contract.balance_of(address),
+        "transactions": transactions
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

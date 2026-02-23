@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Block Detail</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header>Block Detail</header>
+
+<div class="container">
+    <div class="card">
+        <h3>Block #{{ block.index }}</h3>
+        <p><b>Hash:</b> {{ block.hash }}</p>
+        <p><b>Previous:</b> {{ block.previous_hash }}</p>
+        <p><b>Nonce:</b> {{ block.nonce }}</p>
+        <pre>{{ block.transactions }}</pre>
+    </div>
+</div>
+
+</body>
+</html>

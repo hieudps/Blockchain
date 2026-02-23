@@ -1,88 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mini Ethereum Simulation</title>
+    <title>Crypto Blockchain Explorer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-<header>
-    Mini Ethereum Blockchain - RYZE COIN
-</header>
+<div class="sidebar">
+    <h2>RYZE Chain</h2>
+    <button onclick="loadChain()">Refresh</button>
+</div>
 
-<div class="container">
+<div class="main">
 
     <div class="card">
-        <h3>Check Balance</h3>
-        <input id="address" placeholder="Address">
-        <button onclick="checkBalance()">Check</button>
-        <p id="balanceResult"></p>
+        <h3>Dashboard</h3>
+        <canvas id="blockChart"></canvas>
     </div>
 
     <div class="card">
-        <h3>Transfer Token</h3>
+        <h3>Send Transaction</h3>
         <input id="sender" placeholder="Sender">
         <input id="receiver" placeholder="Receiver">
         <input id="amount" type="number" placeholder="Amount">
-        <button onclick="transfer()">Send</button>
-        <p id="transferResult"></p>
+        <button class="action" onclick="transfer()">Send</button>
+        <div id="pendingList" class="pending"></div>
     </div>
 
     <div class="card">
-        <h3>Mine Block</h3>
-        <button onclick="mine()">Mine</button>
-        <p id="mineResult"></p>
-    </div>
+        <h3>Mining</h3>
+        <button class="action" onclick="mine()">Mine Block</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
 
+    </div>
+<div class="card">
+    <h3>Search Address</h3>
+    <input id="searchAddress" placeholder="Enter address">
+    <button class="action" onclick="searchAddress()">Search</button>
+    <div id="addressResult"></div>
+</div>
     <div class="card">
-        <h3>Blockchain</h3>
-        <button onclick="loadChain()">Refresh</button>
-        <pre id="chain"></pre>
+        <h3>Blocks</h3>
+        <div id="blocks"></div>
     </div>
 
 </div>
 
-<script>
-async function checkBalance() {
-    const address = document.getElementById("address").value;
-    const res = await fetch(`/balance/${address}`);
-    const data = await res.json();
-    document.getElementById("balanceResult").innerText =
-        `${data.address}: ${data.balance}`;
-}
+<div class="toast" id="toast"></div>
 
-async function transfer() {
-    const sender = document.getElementById("sender").value;
-    const receiver = document.getElementById("receiver").value;
-    const amount = parseInt(document.getElementById("amount").value);
-
-    const res = await fetch('/transfer', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ sender, receiver, amount })
-    });
-
-    const data = await res.json();
-    document.getElementById("transferResult").innerText = data.message;
-}
-
-async function mine() {
-    const res = await fetch('/mine');
-    const data = await res.json();
-    document.getElementById("mineResult").innerText =
-        data.hash ? "Block mined successfully" : data.message;
-}
-
-async function loadChain() {
-    const res = await fetch('/chain');
-    const data = await res.json();
-    document.getElementById("chain").innerText =
-        JSON.stringify(data, null, 2);
-}
-
-loadChain();
-</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>
 </html>

@@ -15,14 +15,14 @@ class Block:
         self.hash = self.compute_hash()
 
     def compute_hash(self):
-        block_data = {
+        block_string = json.dumps({
             "index": self.index,
             "transactions": self.transactions,
             "timestamp": self.timestamp,
             "previous_hash": self.previous_hash,
             "nonce": self.nonce
-        }
-        block_string = json.dumps(block_data, sort_keys=True)
+        }, sort_keys=True)
+
         return hashlib.sha256(block_string.encode()).hexdigest()
 
 
@@ -41,24 +41,28 @@ class Blockchain:
         self.create_genesis_block()
 
     def create_genesis_block(self):
-        genesis_block = Block(0, [], time(), "0")
-        self.chain.append(genesis_block)
+        genesis = Block(0, [], time(), "0")
+        self.chain.append(genesis)
 
     @property
     def last_block(self):
         return self.chain[-1]
 
     def add_transaction(self, sender, receiver, amount):
-        # Giao dịch được đưa vào pending pool
+
+        if self.contract.balance_of(sender) < amount:
+            return False
+
         self.pending_transactions.append({
             "sender": sender,
             "receiver": receiver,
             "amount": amount
         })
 
+        return True
+
     def proof_of_work(self, block):
-        # Tìm nonce sao cho hash thỏa điều kiện difficulty
-        while not block.hash.startswith('0' * Blockchain.difficulty):
+        while not block.hash.startswith("0" * Blockchain.difficulty):
             block.nonce += 1
             block.hash = block.compute_hash()
 
@@ -67,7 +71,7 @@ class Blockchain:
         if not self.pending_transactions:
             return None
 
-        # State transition xảy ra tại thời điểm mining
+        # Thực thi giao dịch
         for tx in self.pending_transactions:
             success = self.contract.transfer(
                 tx["sender"],
@@ -77,11 +81,26 @@ class Blockchain:
             if not success:
                 return None
 
+        # 🎁 Mining Reward
+        miner_address = "Miner"
+        reward = 50
+
+        self.contract.balances[miner_address] = \
+            self.contract.balance_of(miner_address) + reward
+
+        reward_transaction = {
+            "sender": "SYSTEM",
+            "receiver": miner_address,
+            "amount": reward
+        }
+
+        block_transactions = self.pending_transactions + [reward_transaction]
+
         new_block = Block(
-            index=self.last_block.index + 1,
-            transactions=self.pending_transactions,
-            timestamp=time(),
-            previous_hash=self.last_block.hash
+            self.last_block.index + 1,
+            block_transactions,
+            time(),
+            self.last_block.hash
         )
 
         self.proof_of_work(new_block)

@@ -1,55 +1,127 @@
 body {
     margin: 0;
-    font-family: "Segoe UI", sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     background: #0b0e11;
-    color: #fff;
+    color: #eaecef;
+    display: flex;
 }
 
-header {
+/* SIDEBAR */
+.sidebar {
+    width: 220px;
     background: #181a20;
+    height: 100vh;
     padding: 20px;
-    text-align: center;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.6);
+}
+
+.sidebar h2 {
     color: #f0b90b;
-    font-size: 20px;
+}
+
+.sidebar button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background: #f0b90b;
+    border: none;
     font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
 }
 
-.container {
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
+/* MAIN */
+.main {
+    flex: 1;
+    padding: 30px;
 }
 
+/* CARD */
 .card {
     background: #1e2329;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease;
 }
 
+/* INPUT */
 input {
     padding: 8px;
-    margin: 5px 5px 5px 0;
-    border-radius: 4px;
-    border: none;
-}
-
-button {
-    padding: 8px 15px;
-    border-radius: 4px;
-    border: none;
-    background: #f0b90b;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-button:hover {
-    background: #ffd000;
-}
-
-pre {
-    background: #111;
-    padding: 10px;
+    margin: 5px 0;
     border-radius: 6px;
-    overflow-x: auto;
+    border: none;
+    width: 100%;
+}
+
+/* BUTTON */
+button.action {
+    background: #f0b90b;
+    border: none;
+    padding: 8px 15px;
+    margin-top: 10px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button.action:hover {
+    box-shadow: 0 0 15px #f0b90b;
+    transform: scale(1.05);
+}
+
+/* BLOCK ITEM */
+.block-item {
+    padding: 10px;
+    margin: 6px 0;
+    background: #2b3139;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.block-item:hover {
+    background: #f0b90b;
+    color: black;
+}
+
+/* PENDING */
+.pending {
+    color: #f0b90b;
+}
+
+/* PROGRESS */
+.progress-bar {
+    width: 100%;
+    background: #2b3139;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress {
+    height: 10px;
+    width: 0%;
+    background: #f0b90b;
+    transition: width 0.2s;
+}
+
+/* TOAST */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #f0b90b;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 6px;
+    display: none;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from { opacity:0; transform:translateY(10px);}
+    to { opacity:1; transform:translateY(0);}
 }
