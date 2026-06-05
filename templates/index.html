@@ -1,58 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Crypto Blockchain Explorer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYZE Chain Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-
-<div class="sidebar">
-    <h2>RYZE Chain</h2>
-    <button onclick="loadChain()">Refresh</button>
-</div>
-
-<div class="main">
-
-    <div class="card">
-        <h3>Dashboard</h3>
-        <canvas id="blockChart"></canvas>
-    </div>
-
-    <div class="card">
-        <h3>Send Transaction</h3>
-        <input id="sender" placeholder="Sender">
-        <input id="receiver" placeholder="Receiver">
-        <input id="amount" type="number" placeholder="Amount">
-        <button class="action" onclick="transfer()">Send</button>
-        <div id="pendingList" class="pending"></div>
-    </div>
-
-    <div class="card">
-        <h3>Mining</h3>
-        <button class="action" onclick="mine()">Mine Block</button>
-        <div class="progress-bar">
-            <div class="progress" id="progress"></div>
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">R</span>
+            <div>
+                <h1>RYZE Chain</h1>
+                <p>Python Blockchain Demo</p>
+            </div>
         </div>
+        <nav>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#wallet">Wallet</a>
+            <a href="#send">Send Transaction</a>
+            <a href="#mining">Mining</a>
+            <a href="#explorer">Blockchain Explorer</a>
+            <a href="#search">Search Address</a>
+            <a href="#validate">Validate Chain</a>
+            <a href="#settings">Settings</a>
+        </nav>
+    </aside>
 
-    </div>
-<div class="card">
-    <h3>Search Address</h3>
-    <input id="searchAddress" placeholder="Enter address">
-    <button class="action" onclick="searchAddress()">Search</button>
-    <div id="addressResult"></div>
-</div>
-    <div class="card">
-        <h3>Blocks</h3>
-        <div id="blocks"></div>
-    </div>
+    <main class="main">
+        <section id="dashboard" class="section">
+            <div class="section-header">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p id="currentWalletText">Current wallet: none</p>
+                </div>
+                <button class="ghost-btn" onclick="refreshAll()">Refresh</button>
+            </div>
 
-</div>
+            <div class="stats-grid">
+                <article class="stat-card"><span>Total Blocks</span><strong id="statBlocks">0</strong></article>
+                <article class="stat-card"><span>Total Transactions</span><strong id="statTx">0</strong></article>
+                <article class="stat-card"><span>Pending Transactions</span><strong id="statPending">0</strong></article>
+                <article class="stat-card"><span>Total Wallets</span><strong id="statWallets">0</strong></article>
+                <article class="stat-card"><span>Difficulty</span><strong id="statDifficulty">0</strong></article>
+                <article class="stat-card"><span>Mining Reward</span><strong id="statReward">0</strong></article>
+            </div>
 
-<div class="toast" id="toast"></div>
+            <div class="chart-grid">
+                <div class="panel"><h3>Blocks Over Time</h3><canvas id="blocksChart"></canvas></div>
+                <div class="panel"><h3>Transactions Per Block</h3><canvas id="txChart"></canvas></div>
+                <div class="panel wide"><h3>Wallet Balances</h3><canvas id="balanceChart"></canvas></div>
+            </div>
+        </section>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <section id="wallet" class="section two-column">
+            <div class="panel">
+                <h2>Wallet</h2>
+                <label>Wallet name</label>
+                <input id="walletLabel" placeholder="Example: Student wallet">
+                <label>Initial demo token</label>
+                <input id="walletInitial" type="number" value="100" min="0">
+                <button class="primary-btn" onclick="createWallet()">Create Wallet</button>
 
+                <div class="divider"></div>
+
+                <label>Login by address</label>
+                <input id="loginAddress" placeholder="Enter wallet address">
+                <button class="secondary-btn" onclick="loginWallet()">Login Wallet</button>
+            </div>
+
+            <div class="panel">
+                <h2>Created Wallets</h2>
+                <div id="walletList" class="wallet-list"></div>
+            </div>
+        </section>
+
+        <section id="send" class="section two-column">
+            <div class="panel">
+                <h2>Send Transaction</h2>
+                <label>Sender</label>
+                <input id="sender" placeholder="Auto uses current wallet">
+                <label>Receiver</label>
+                <input id="receiver" placeholder="Receiver address">
+                <label>Amount</label>
+                <input id="amount" type="number" placeholder="Token amount" min="0">
+                <p class="hint">Gas fee is added automatically when the transaction is mined.</p>
+                <button class="primary-btn" onclick="sendTransaction()">Send Transaction</button>
+            </div>
+
+            <div class="panel">
+                <h2>Pending Pool</h2>
+                <div id="pendingList" class="table-wrap"></div>
+            </div>
+        </section>
+
+        <section id="mining" class="section two-column">
+            <div class="panel">
+                <h2>Mining</h2>
+                <label>Miner address</label>
+                <input id="minerAddress" placeholder="Miner wallet address">
+                <button class="primary-btn" id="mineButton" onclick="mineBlock()">Mine Block</button>
+                <div class="loading-track"><div id="mineProgress" class="loading-bar"></div></div>
+                <div id="mineResult" class="result-box"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Reward Rule</h2>
+                <div class="rule-list">
+                    <div><span>Reward</span><strong id="rewardRule">50</strong></div>
+                    <div><span>Gas fee</span><strong id="gasRule">1</strong></div>
+                    <div><span>Difficulty</span><strong id="difficultyRule">3</strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="explorer" class="section">
+            <div class="section-header">
+                <h2>Blockchain Explorer</h2>
+                <button class="ghost-btn" onclick="loadChain()">Reload Blocks</button>
+            </div>
+            <div id="blockList" class="block-list"></div>
+        </section>
+
+        <section id="search" class="section">
+            <div class="panel">
+                <h2>Search Address</h2>
+                <div class="inline-form">
+                    <input id="searchAddress" placeholder="Enter wallet address">
+                    <button class="secondary-btn" onclick="searchAddress()">Search</button>
+                </div>
+                <div id="addressResult" class="table-wrap"></div>
+            </div>
+        </section>
+
+        <section id="validate" class="section two-column">
+            <div class="panel">
+                <h2>Validate Chain</h2>
+                <button class="primary-btn" onclick="validateChain()">Validate Blockchain</button>
+                <div id="validateResult" class="result-box"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Tamper Block</h2>
+                <label>Block index</label>
+                <input id="tamperIndex" type="number" min="1" placeholder="Example: 1">
+                <label>New amount</label>
+                <input id="tamperAmount" type="number" placeholder="Changed amount">
+                <button class="danger-btn" onclick="tamperBlock()">Tamper Block</button>
+                <p class="hint">The block data is changed without recalculating hash, so validation will fail.</p>
+            </div>
+        </section>
+
+        <section id="settings" class="section two-column">
+            <div class="panel">
+                <h2>Settings</h2>
+                <label>Mining difficulty</label>
+                <input id="difficultyInput" type="number" min="1" max="5">
+                <button class="primary-btn" onclick="updateDifficulty()">Update Difficulty</button>
+            </div>
+
+            <div class="panel danger-panel">
+                <h2>Reset Blockchain</h2>
+                <p>Reset removes all demo data and creates a new genesis block.</p>
+                <button class="danger-btn" onclick="resetBlockchain()">Reset Blockchain</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

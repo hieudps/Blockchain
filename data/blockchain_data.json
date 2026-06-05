@@ -1,0 +1,27 @@
+{
+  "difficulty": 3,
+  "mining_reward": 50.0,
+  "gas_fee": 1.0,
+  "pending_transactions": [],
+  "current_wallet": "Alice",
+  "chain": [
+    {
+      "index": 0,
+      "transactions": [
+        {
+          "type": "genesis",
+          "sender": "SYSTEM",
+          "receiver": "Alice",
+          "amount": 1000000,
+          "gas_fee": 0,
+          "timestamp": 1780690003.8622882
+        }
+      ],
+      "timestamp": 1780690003.8622894,
+      "previous_hash": "0",
+      "nonce": 0,
+      "difficulty": 0,
+      "hash": "a3648e7de41ac718a35c68b789d607b3dc12ba25363f39e8d2ba9a26eff3b2f7"
+    }
+  ]
+}
